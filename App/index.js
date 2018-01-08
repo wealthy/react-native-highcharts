@@ -153,7 +153,9 @@ class ChartWeb extends Component {
     }
 
     const value = msgData.data.mydata;
-    this.props.updateStore(value);
+    if (this.props.updateStore) {
+      this.props.updateStore(value);
+    }
 
     // invoke target function
     const response = this[msgData.targetFunc].apply(this, [msgData]);
