@@ -2,6 +2,7 @@ import React, { Component, PropTypes, } from 'react';
 import {
   AppRegistry,
   StyleSheet,
+  Platform,
   Text,
   View,
   WebView,
@@ -34,22 +35,22 @@ const generateHTML = (config) => (
     <div id="container"></div>
       <script>
             (function(){
-      
+
           var promiseChain = Promise.resolve();
-      
-      
+
+
           var promises = {};
           var callbacks = {};
-      
+
          var init = function() {
-      
+
              const guid = function() {
                  function s4() {
                      return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
                  }
                  return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
              }
-      
+
              window.webViewBridge = {
                  /**
                   * send message to the React-Native WebView onMessage handler
@@ -61,38 +62,38 @@ const generateHTML = (config) => (
                  send: function(targetFunc, data, success, error) {
                      success = success || function(){};
                      error = error || function () {};
-      
+
                      var msgObj = {
                          targetFunc: targetFunc,
                          data: data || {},
                          msgId: guid(),
                      };
-      
+
                      var msg = JSON.stringify(msgObj);
-      
+
                      promiseChain = promiseChain.then(function () {
                          return new Promise(function (resolve, reject) {
                              console.log("sending message " + msgObj.targetFunc);
-      
+
                              promises[msgObj.msgId] = {resolve: resolve, reject: reject};
                              callbacks[msgObj.msgId] = {
                                  onsuccess: success,
                                  onerror: error
                              };
-      
+
                              window.postMessage(msg);
                          })
                      }).catch(function (e) {
                          console.error('rnBridge send failed ' + e.message);
                      });
                  },
-      
-      
+
+
              };
-      
+
              window.document.addEventListener('message', function(e) {
                  console.log("message received from react native");
-      
+
                  var message;
                  try {
                      message = JSON.parse(e.data)
@@ -101,13 +102,13 @@ const generateHTML = (config) => (
                      console.error("failed to parse message from react-native " + err);
                      return;
                  }
-      
+
                  //resolve promise - send next message if available
                  if (promises[message.msgId]) {
                      promises[message.msgId].resolve();
                      delete promises[message.msgId];
                  }
-      
+
                  //trigger callback
                  if (message.args && callbacks[message.msgId]) {
                      if (message.isSuccessfull) {
@@ -118,10 +119,10 @@ const generateHTML = (config) => (
                      }
                      delete callbacks[message.msgId];
                  }
-      
+
              });
          };
-      
+
          init();
       }());
       </script>
@@ -141,12 +142,18 @@ const win = Dimensions.get('window');
 class ChartWeb extends Component {
 
   onWebViewMessage = (event) => {
+    let eventData = event.nativeEvent.data;
+    if(Platform.OS === "ios"){
+      // IOS returns the data url encoded/percent-encoding twice
+      // unescape('%257B') -> %7B
+      // unescape(%7B) -> {
+      eventData = unescape(unescape(eventData));
+    }
     // post back reply as soon as possible to enable sending the next message
-    this.myWebView.postMessage(event.nativeEvent.data);
-    // alert(event.nativeEvent.data);
+    this.myWebView.postMessage(eventData);
     let msgData;
     try {
-      msgData = JSON.parse(event.nativeEvent.data);
+      msgData = JSON.parse(eventData);
     }    catch (err) {
       console.warn(err);
       return;
