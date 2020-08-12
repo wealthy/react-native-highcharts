@@ -187,23 +187,21 @@ class ChartWeb extends Component {
     let concatHTML = generateHTML(flattenObject(config));
 
     return (
-        <View style={this.props.style}>
-          <WebView
-              ref={(webview) => {
-                this.myWebView = webview;
-              }}
-              onLayout={this.reRenderWebView}
-              style={styles.full}
-              source={{ html: concatHTML, baseUrl: 'http://test.com', }}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              scalesPageToFit={true}
-              scrollEnabled={false}
-              onMessage={this.onWebViewMessage}
-              automaticallyAdjustContentInsets={true}
-              {...this.props}
-          />
-        </View>
+        <WebView
+            ref={(webview) => {
+              this.myWebView = webview;
+            }}
+            onLayout={this.reRenderWebView}
+            style={styles.full}
+            source={{ html: concatHTML, baseUrl: 'http://test.com', }}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            scalesPageToFit={true}
+            scrollEnabled={false}
+            onMessage={this.onWebViewMessage}
+            automaticallyAdjustContentInsets={true}
+            {...this.props}
+        />
     );
   };
 };
