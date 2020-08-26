@@ -5,10 +5,11 @@ import {
   Platform,
   Text,
   View,
-  WebView,
   Image,
   Dimensions
 } from 'react-native';
+
+import {WebView} from "react-native-webview";
 
 
 const generateHTML = (config) => (
