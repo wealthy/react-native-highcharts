@@ -82,7 +82,7 @@ const generateHTML = (config) => (
                                  onerror: error
                              };
 
-                             window.postMessage(msg);
+                             window.ReactNativeWebView.postMessage(msg);
                          })
                      }).catch(function (e) {
                          console.error('rnBridge send failed ' + e.message);
