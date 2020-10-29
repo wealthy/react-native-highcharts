@@ -92,7 +92,7 @@ const generateHTML = (config) => (
 
              };
 
-             window.document.addEventListener('message', function(e) {
+             ${Platform.OS === "ios" ? "window" : "window.document"}.addEventListener('message', function(e) {
                  console.log("message received from react native");
 
                  var message;
